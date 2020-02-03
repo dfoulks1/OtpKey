@@ -1,16 +1,18 @@
 #!/bin/expect -f
-source ./ok.conf
 set timeout -1
+log_user 0
 proc slurp {file} {
     set fh [open $file r]
     set ret [read $fh]
     close $fh
     return $ret
 }
-log_user 0
-set passwd [slurp $credfile]
-spawn donkeyrunner $argv > /tmp/screen-exchange
+set passwd [slurp /home/dfoulks/.dfoulks.cred]
+spawn donkeyrunner $argv
 expect "Enter passphrase : "
 send -- "$passwd\r"
+expect -re "(.*)\r"
+set outcome $expect_out(1,string)
+puts [open "/tmp/screen-exchange" "a+"] $outcome
+spawn screen -X readbuf
 expect EOF
-

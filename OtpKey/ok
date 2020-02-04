@@ -8,11 +8,21 @@ proc slurp {file} {
     return $ret
 }
 set passwd [slurp /home/dfoulks/.dfoulks.cred]
+
 spawn donkeyrunner $argv
 expect "Enter passphrase : "
 send -- "$passwd\r"
+
+log_user 1
 expect -re "(.*)\r"
+
+#log_user 0
 set outcome $expect_out(1,string)
+
+#log_user 1
+#puts $outcome
 puts [open "/tmp/screen-exchange" "a+"] $outcome
-spawn screen -X readbuf
+
+#spawn screen -X readbuf /tmp/screen-exchange
+#spawn rm /tmp/screen-exchange
 expect EOF
